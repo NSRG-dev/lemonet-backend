@@ -1,6 +1,7 @@
 import { Controller, Get, UseInterceptors } from '@nestjs/common';
 import { FaqService } from '@app/faq';
-import { CacheInterceptor } from '@nestjs/cache-manager';
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
+import { CacheTTLEnum } from '@app/common/constants/cache-ttl.enum';
 
 @Controller('faq')
 export class FaqController {
@@ -8,6 +9,7 @@ export class FaqController {
 
   @Get()
   @UseInterceptors(CacheInterceptor)
+  @CacheTTL(CacheTTLEnum.FAQ)
   async findAll() {
     return this.faqService.findAll();
   }
