@@ -4,6 +4,7 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { BannerRepository } from './banner.repository';
 import { MediaType } from '@prisma/client';
 import { I18nService } from 'nestjs-i18n';
+import { BannerService as LibBannerService } from '@app/banner';
 
 @Injectable()
 export class BannerService {
@@ -11,6 +12,7 @@ export class BannerService {
     private readonly mediaService: MediaService,
     private readonly repository: BannerRepository,
     private readonly i18n: I18nService,
+    private readonly libBannerService: LibBannerService,
   ) {}
 
   async create(data: BannerCreateDto) {
@@ -21,5 +23,11 @@ export class BannerService {
     }
 
     return this.repository.create(data);
+  }
+
+  async delete(id: string) {
+    const banner = await this.libBannerService.findOneById(id);
+    await this.mediaService.deleteObject(banner.media.media.url);
+    return this.repository.delete(id);
   }
 }

@@ -11,4 +11,23 @@ export class BannerRepository {
       include: BANNER_INCLUDE,
     });
   }
+
+  async findOneById(id: string) {
+    return this.prisma.banner.findUnique({
+      where: { id },
+      include: BANNER_INCLUDE,
+    });
+  }
+
+  async existsById(id: string) {
+    const result = await this.prisma.$queryRaw`
+      SELECT EXISTS(
+        SELECT 1
+        FROM "banners"
+        WHERE id = ${id}
+      ) as exists
+    `;
+
+    return Boolean(result[0].exists);
+  }
 }
