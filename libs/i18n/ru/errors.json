@@ -33,5 +33,9 @@
     "media": {
         "notFound": "Медиа не найдено",
         "notFoundMany": "Медиа не найдены"
+    },
+    "faq": {
+        "notFound": "FAQ не найден",
+        "notFoundMany": "FAQ не найдены"
     }
 }
