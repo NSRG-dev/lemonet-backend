@@ -37,5 +37,9 @@
     "faq": {
         "notFound": "FAQ не найден",
         "notFoundMany": "FAQ не найдены"
+    },
+    "promotion": {
+        "notFound": "Промо не найден",
+        "notFoundMany": "Промо не найдены"
     }
 }
