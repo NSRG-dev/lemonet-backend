@@ -1,0 +1,13 @@
+export default () => ({
+  PORT: parseInt(process.env.PORT, 10) || 3000,
+  DATABASE_URL: process.env.DATABASE_URL,
+  ACCESS_SECRET: process.env.ACCESS_SECRET,
+  REFRESH_SECRET: process.env.REFRESH_SECRET,
+  CACHE_TTL: parseInt(process.env.CACHE_TTL, 10) || 300, // milliseconds
+  MAX_SESSIONS_PER_USER: parseInt(process.env.MAX_SESSIONS_PER_USER, 10) || 5,
+  MAX_MESSAGES: parseInt(process.env.MAX_MESSAGES, 10) || 300,
+  S3_ACCESS_KEY_ID: process.env.S3_ACCESS_KEY_ID,
+  S3_SECRET_ACCESS_KEY: process.env.S3_SECRET_ACCESS_KEY,
+  S3_REGION: process.env.S3_REGION,
+  S3_ENDPOINT: process.env.S3_ENDPOINT,
+});

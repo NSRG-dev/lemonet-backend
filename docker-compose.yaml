@@ -1,0 +1,111 @@
+# WARNING: This file is DEV version.
+
+version: '3.8'
+
+services:
+  main:
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    build:
+      context: .
+      dockerfile: Dockerfile.main
+    # Если сиды запущены, то убрать npm run resets
+    command: >
+      sh -c "npm run reset && npm run start:prod:main"
+    ports:
+      - 3000:3000
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/template
+      - ACCESS_SECRET=secret
+      - REFRESH_SECRET=secret
+      - PORT=3000
+      - DEBUG=true
+      - S3_ACCESS_KEY_ID=minio
+      - S3_SECRET_ACCESS_KEY=miniopassword
+      - S3_BUCKET_NAME=default
+      - S3_REGION=us-east-1
+      - S3_ENDPOINT=http://minio:9000
+
+  admin:
+    depends_on:
+      postgres:
+        condition: service_healthy
+      main:
+        condition: service_started
+      minio:
+        condition: service_healthy
+    build:
+      context: .
+      dockerfile: Dockerfile.admin
+    command: >
+      sh -c "npm run start:prod:admin"
+    ports:
+      - 3001:3001
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/template
+      - ACCESS_SECRET=secret
+      - REFRESH_SECRET=secret
+      - PORT_ADMIN=3001
+      - S3_ACCESS_KEY_ID=minio
+      - S3_SECRET_ACCESS_KEY=miniopassword
+      - S3_BUCKET_NAME=default
+      - S3_REGION=us-east-1
+      - DEBUG=true
+      - S3_ENDPOINT=http://minio:9000
+
+  minio:
+    image: minio/minio:latest
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    volumes:
+      - minio_data:/data
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: miniopassword
+    command: server --console-address ":9001" /data
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:9000/minio/health/live']
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    restart: unless-stopped
+
+  minio-setup:
+    image: minio/mc:latest
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      sh -c "mc alias set local http://minio:9000 minio miniopassword &&
+             mc mb local/default || true"
+    restart: on-failure
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:9000/minio/health/live']
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: template
+      POSTGRES_PORT: 5432
+    ports:
+      - 5432:5432
+    healthcheck:
+      test: ['CMD', 'pg_isready', '-U', 'postgres', '-d', 'template']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
+  minio_data:

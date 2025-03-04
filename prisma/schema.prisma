@@ -1,0 +1,153 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["debian-openssl-3.0.x", "native"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum MediaType {
+  AVATAR
+  BANNER
+  PROMOTION
+}
+
+model Media {
+  id         String           @id @default(uuid())
+  url        String           @db.Text
+  type       MediaType
+  createdAt  DateTime         @default(now()) @map("created_at")
+  updatedAt  DateTime         @default(now()) @updatedAt @map("updated_at")
+  banners    BannerMedia[]
+  promotions PromotionMedia[]
+
+  @@map("medias")
+}
+
+model Message {
+  id        String   @id @default(uuid())
+  content   String   @db.Text
+  senderId  String   @map("sender_id")
+  sender    User     @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@map("messages")
+}
+
+model User {
+  id        String    @id @default(uuid())
+  email     String    @unique
+  username  String    @unique
+  password  String
+  roleId    String    @map("role_id")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @default(now()) @updatedAt @map("updated_at")
+  role      Role      @relation(fields: [roleId], references: [id], onDelete: NoAction)
+  sessions  Session[]
+  messages  Message[]
+
+  @@index([email])
+  @@map("users")
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  userId       String   @map("user_id")
+  refreshToken String   @map("refresh_token")
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@index([refreshToken])
+  @@map("sessions")
+}
+
+model Permission {
+  id              String           @id @default(uuid())
+  name            String           @unique
+  title           String
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @default(now()) @updatedAt @map("updated_at")
+  rolePermissions RolePermission[]
+
+  @@map("permissions")
+}
+
+model PromotionMedia {
+  promotionId String    @unique @map("promotion_id")
+  mediaId     String    @map("media_id")
+  promotion   Promotion @relation(fields: [promotionId], references: [id], onDelete: Cascade)
+  media       Media     @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+
+  @@id([promotionId, mediaId])
+  @@map("promotion_medias")
+}
+
+model Promotion {
+  id        String          @id @default(uuid())
+  title     String
+  content   String          @db.Text
+  createdAt DateTime        @default(now()) @map("created_at")
+  updatedAt DateTime        @default(now()) @updatedAt @map("updated_at")
+  media     PromotionMedia?
+
+  @@map("promotions")
+}
+
+model Faq {
+  id        String   @id @default(uuid())
+  question  String   @db.Text
+  answer    String   @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@map("faqs")
+}
+
+model Role {
+  id              String           @id @default(uuid())
+  name            String           @unique
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime         @default(now()) @updatedAt @map("updated_at")
+  rolePermissions RolePermission[]
+  users           User[]
+
+  @@index([name])
+  @@map("roles")
+}
+
+model BannerMedia {
+  bannerId String @unique @map("banner_id")
+  mediaId  String @map("media_id")
+  banner   Banner @relation(fields: [bannerId], references: [id], onDelete: Cascade)
+  media    Media  @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+
+  @@id([bannerId, mediaId])
+  @@map("banner_medias")
+}
+
+model Banner {
+  id        String       @id @default(uuid())
+  title     String
+  content   String       @db.Text
+  createdAt DateTime     @default(now()) @map("created_at")
+  updatedAt DateTime     @default(now()) @updatedAt @map("updated_at")
+  media     BannerMedia?
+
+  @@map("banners")
+}
+
+model RolePermission {
+  roleId       String     @map("role_id")
+  permissionId String     @map("permission_id")
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @default(now()) @updatedAt @map("updated_at")
+
+  @@id([roleId, permissionId])
+  @@map("role_permissions")
+}
