@@ -23,4 +23,11 @@ export class PromotionRepository {
       where: mapSearch(dto.filters),
     });
   }
+
+  async findOneById(id: string) {
+    return this.prisma.promotion.findUnique({
+      where: { id },
+      include: PROMOTION_INCLUDE,
+    });
+  }
 }
