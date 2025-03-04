@@ -70,4 +70,15 @@ export class MediaService {
       throw new InternalServerErrorException(error);
     }
   }
+
+  async deleteObject(key: string) {
+    try {
+      await this.s3.deleteObject({
+        Bucket: this.configService.get('S3_BUCKET_NAME'),
+        Key: key,
+      });
+    } catch (error) {
+      throw new NotFoundException(this.i18n.t('errors.media.notFound'));
+    }
+  }
 }

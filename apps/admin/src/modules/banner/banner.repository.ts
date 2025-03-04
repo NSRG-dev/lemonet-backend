@@ -18,4 +18,10 @@ export class BannerRepository {
       },
     });
   }
+
+  async delete(id: string) {
+    return this.prisma.banner.delete({
+      where: { id },
+    });
+  }
 }
