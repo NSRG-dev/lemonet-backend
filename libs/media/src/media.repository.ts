@@ -22,9 +22,14 @@ export class MediaRepository {
   }
 
   async existsById(id: string) {
-    const count = await this.prisma.media.count({
-      where: { id },
-    });
-    return count > 0;
+    const result = await this.prisma.$queryRaw`
+      SELECT EXISTS(
+        SELECT 1 
+        FROM "media" 
+        WHERE id = ${id}
+      ) as exists
+    `;
+
+    return Boolean(result[0].exists);
   }
 }
