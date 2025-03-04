@@ -1,5 +1,9 @@
 import { Prisma } from '@prisma/client';
 
 export const BANNER_INCLUDE = {
-  media: true,
+  media: {
+    include: {
+      media: true,
+    },
+  },
 } satisfies Prisma.BannerInclude;

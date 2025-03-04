@@ -13,4 +13,10 @@ export class PromotionRepository {
       include: PROMOTION_INCLUDE,
     });
   }
+
+  async delete(id: string) {
+    return this.prisma.promotion.delete({
+      where: { id },
+    });
+  }
 }

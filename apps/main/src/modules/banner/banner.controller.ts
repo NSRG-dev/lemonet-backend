@@ -1,6 +1,7 @@
 import { Controller, Get, UseInterceptors } from '@nestjs/common';
 import { BannerService } from '@app/banner';
-import { CacheInterceptor } from '@nestjs/cache-manager';
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
+import { CacheTTLEnum } from '@app/common/constants/cache-ttl.enum';
 
 @Controller('banners')
 export class BannerController {
@@ -8,7 +9,8 @@ export class BannerController {
 
   @Get()
   @UseInterceptors(CacheInterceptor)
-  findAll() {
+  @CacheTTL(CacheTTLEnum.BANNER)
+  async findAll() {
     return this.service.findAll();
   }
 }

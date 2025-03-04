@@ -1,4 +1,11 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Param,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { BannerService } from './banner.service';
 import { BannerCreateDto } from '@app/banner/dto/banner.create.dto';
 import {
@@ -19,5 +26,11 @@ export class BannerController {
   @HasPermissions(PermissionEnum.BannerCreate)
   create(@Body() data: BannerCreateDto) {
     return this.service.create(data);
+  }
+
+  @Delete(':id')
+  @HasPermissions(PermissionEnum.BannerDelete)
+  delete(@Param('id') id: string) {
+    return this.service.delete(id);
   }
 }
