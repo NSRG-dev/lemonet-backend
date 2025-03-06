@@ -23,22 +23,7 @@ export class UsersRepository {
       where: mapSearch(dto.filters),
       orderBy: mapSort(dto.sorts),
       ...mapPagination(dto.pagination),
-      include: {
-        referals: {
-          select: {
-            id: true,
-            username: true,
-            email: true,
-          },
-        },
-        referedBy: {
-          select: {
-            id: true,
-            username: true,
-            email: true,
-          },
-        },
-      },
+      include: USER_INCLUDE,
     });
   }
 
