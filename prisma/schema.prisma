@@ -38,16 +38,20 @@ model Message {
 }
 
 model User {
-  id        String    @id @default(uuid())
-  email     String    @unique
-  username  String    @unique
-  password  String
-  roleId    String    @map("role_id")
-  createdAt DateTime  @default(now()) @map("created_at")
-  updatedAt DateTime  @default(now()) @updatedAt @map("updated_at")
-  role      Role      @relation(fields: [roleId], references: [id], onDelete: NoAction)
-  sessions  Session[]
-  messages  Message[]
+  id          String    @id @default(uuid())
+  email       String    @unique
+  username    String    @unique
+  password    String
+  referalCode String    @unique @default(cuid()) @map("referal_code")
+  roleId      String    @map("role_id")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @default(now()) @updatedAt @map("updated_at")
+  role        Role      @relation(fields: [roleId], references: [id], onDelete: NoAction)
+  referedById String?   @map("refered_by_id")
+  referedBy   User?     @relation("UserReferals", fields: [referedById], references: [id])
+  referals    User[]    @relation("UserReferals")
+  sessions    Session[]
+  messages    Message[]
 
   @@index([email])
   @@map("users")
