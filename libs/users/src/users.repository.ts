@@ -23,6 +23,22 @@ export class UsersRepository {
       where: mapSearch(dto.filters),
       orderBy: mapSort(dto.sorts),
       ...mapPagination(dto.pagination),
+      include: {
+        referals: {
+          select: {
+            id: true,
+            username: true,
+            email: true,
+          },
+        },
+        referedBy: {
+          select: {
+            id: true,
+            username: true,
+            email: true,
+          },
+        },
+      },
     });
   }
 
@@ -39,7 +55,13 @@ export class UsersRepository {
     });
   }
 
-  async create(dto: UserCreateDto) {
+  async create({ referalCode, ...dto }: UserCreateDto) {
+    const referedUser =
+      referalCode &&
+      (await this.prisma.user.findUnique({
+        where: { referalCode },
+      }));
+
     return this.prisma.user.create({
       data: {
         ...dto,
@@ -48,6 +70,13 @@ export class UsersRepository {
             name: BaseRoleEnum.User,
           },
         },
+        ...(referedUser
+          ? {
+              referedBy: {
+                connect: { id: referedUser.id },
+              },
+            }
+          : {}),
       },
       include: USER_INCLUDE,
     });
