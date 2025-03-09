@@ -34,6 +34,7 @@ CREATE TABLE "users" (
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "refered_by_id" TEXT,
+    "avatarId" TEXT,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
@@ -61,20 +62,13 @@ CREATE TABLE "permissions" (
 );
 
 -- CreateTable
-CREATE TABLE "promotion_medias" (
-    "promotion_id" TEXT NOT NULL,
-    "media_id" TEXT NOT NULL,
-
-    CONSTRAINT "promotion_medias_pkey" PRIMARY KEY ("promotion_id","media_id")
-);
-
--- CreateTable
 CREATE TABLE "promotions" (
     "id" TEXT NOT NULL,
     "title" TEXT NOT NULL,
     "content" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "mediaId" TEXT,
 
     CONSTRAINT "promotions_pkey" PRIMARY KEY ("id")
 );
@@ -101,20 +95,13 @@ CREATE TABLE "roles" (
 );
 
 -- CreateTable
-CREATE TABLE "banner_medias" (
-    "banner_id" TEXT NOT NULL,
-    "media_id" TEXT NOT NULL,
-
-    CONSTRAINT "banner_medias_pkey" PRIMARY KEY ("banner_id","media_id")
-);
-
--- CreateTable
 CREATE TABLE "banners" (
     "id" TEXT NOT NULL,
     "title" TEXT NOT NULL,
     "content" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "mediaId" TEXT,
 
     CONSTRAINT "banners_pkey" PRIMARY KEY ("id")
 );
@@ -148,16 +135,10 @@ CREATE INDEX "sessions_refresh_token_idx" ON "sessions"("refresh_token");
 CREATE UNIQUE INDEX "permissions_name_key" ON "permissions"("name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "promotion_medias_promotion_id_key" ON "promotion_medias"("promotion_id");
-
--- CreateIndex
 CREATE UNIQUE INDEX "roles_name_key" ON "roles"("name");
 
 -- CreateIndex
 CREATE INDEX "roles_name_idx" ON "roles"("name");
-
--- CreateIndex
-CREATE UNIQUE INDEX "banner_medias_banner_id_key" ON "banner_medias"("banner_id");
 
 -- AddForeignKey
 ALTER TABLE "messages" ADD CONSTRAINT "messages_sender_id_fkey" FOREIGN KEY ("sender_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -169,19 +150,16 @@ ALTER TABLE "users" ADD CONSTRAINT "users_role_id_fkey" FOREIGN KEY ("role_id") 
 ALTER TABLE "users" ADD CONSTRAINT "users_refered_by_id_fkey" FOREIGN KEY ("refered_by_id") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
+ALTER TABLE "users" ADD CONSTRAINT "users_avatarId_fkey" FOREIGN KEY ("avatarId") REFERENCES "medias"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
 ALTER TABLE "sessions" ADD CONSTRAINT "sessions_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "promotion_medias" ADD CONSTRAINT "promotion_medias_promotion_id_fkey" FOREIGN KEY ("promotion_id") REFERENCES "promotions"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "promotions" ADD CONSTRAINT "promotions_mediaId_fkey" FOREIGN KEY ("mediaId") REFERENCES "medias"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "promotion_medias" ADD CONSTRAINT "promotion_medias_media_id_fkey" FOREIGN KEY ("media_id") REFERENCES "medias"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "banner_medias" ADD CONSTRAINT "banner_medias_banner_id_fkey" FOREIGN KEY ("banner_id") REFERENCES "banners"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "banner_medias" ADD CONSTRAINT "banner_medias_media_id_fkey" FOREIGN KEY ("media_id") REFERENCES "medias"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "banners" ADD CONSTRAINT "banners_mediaId_fkey" FOREIGN KEY ("mediaId") REFERENCES "medias"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "role_permissions" ADD CONSTRAINT "role_permissions_permission_id_fkey" FOREIGN KEY ("permission_id") REFERENCES "permissions"("id") ON DELETE CASCADE ON UPDATE CASCADE;

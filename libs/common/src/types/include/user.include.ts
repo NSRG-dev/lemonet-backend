@@ -16,4 +16,5 @@ export const USER_INCLUDE = {
       email: true,
     },
   },
+  avatar: true,
 } satisfies Prisma.UserInclude;

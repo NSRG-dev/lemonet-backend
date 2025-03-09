@@ -11,8 +11,8 @@ export class BannerRepository {
       data: {
         ...data,
         media: {
-          create: {
-            mediaId,
+          connect: {
+            id: mediaId,
           },
         },
       },
