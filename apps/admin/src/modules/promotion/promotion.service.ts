@@ -25,7 +25,7 @@ export class PromotionService {
 
   async delete(id: string) {
     const promotion = await this.libPromotionService.findOneById(id);
-    await this.mediaService.deleteObject(promotion.media.media.url);
+    await this.mediaService.deleteObject(promotion.media.url);
     return this.promotionRepository.delete(id);
   }
 }
