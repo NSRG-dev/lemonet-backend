@@ -9,7 +9,7 @@ export class PromotionRepository {
 
   async create({ mediaId, ...dto }: PromotionCreateDto) {
     return this.prisma.promotion.create({
-      data: { ...dto, media: { create: { mediaId } } },
+      data: { ...dto, media: { connect: { id: mediaId } } },
       include: PROMOTION_INCLUDE,
     });
   }

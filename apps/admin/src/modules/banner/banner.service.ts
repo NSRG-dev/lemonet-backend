@@ -27,7 +27,7 @@ export class BannerService {
 
   async delete(id: string) {
     const banner = await this.libBannerService.findOneById(id);
-    await this.mediaService.deleteObject(banner.media.media.url);
+    await this.mediaService.deleteObject(banner.media.url);
     return this.repository.delete(id);
   }
 }

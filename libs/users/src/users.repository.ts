@@ -52,7 +52,7 @@ export class UsersRepository {
         ...dto,
         role: {
           connect: {
-            name: BaseRoleEnum.User,
+            name: BaseRoleEnum.Bronze,
           },
         },
         ...(referedUser

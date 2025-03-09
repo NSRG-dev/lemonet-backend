@@ -15,13 +15,14 @@ enum MediaType {
 }
 
 model Media {
-  id         String           @id @default(uuid())
-  url        String           @db.Text
+  id         String      @id @default(uuid())
+  url        String      @db.Text
   type       MediaType
-  createdAt  DateTime         @default(now()) @map("created_at")
-  updatedAt  DateTime         @default(now()) @updatedAt @map("updated_at")
-  banners    BannerMedia[]
-  promotions PromotionMedia[]
+  createdAt  DateTime    @default(now()) @map("created_at")
+  updatedAt  DateTime    @default(now()) @updatedAt @map("updated_at")
+  banners    Banner[]
+  promotions Promotion[]
+  users      User[]
 
   @@map("medias")
 }
@@ -52,6 +53,8 @@ model User {
   referals    User[]    @relation("UserReferals")
   sessions    Session[]
   messages    Message[]
+  avatar      Media?    @relation(fields: [avatarId], references: [id])
+  avatarId    String?
 
   @@index([email])
   @@map("users")
@@ -80,23 +83,14 @@ model Permission {
   @@map("permissions")
 }
 
-model PromotionMedia {
-  promotionId String    @unique @map("promotion_id")
-  mediaId     String    @map("media_id")
-  promotion   Promotion @relation(fields: [promotionId], references: [id], onDelete: Cascade)
-  media       Media     @relation(fields: [mediaId], references: [id], onDelete: Cascade)
-
-  @@id([promotionId, mediaId])
-  @@map("promotion_medias")
-}
-
 model Promotion {
-  id        String          @id @default(uuid())
+  id        String   @id @default(uuid())
   title     String
-  content   String          @db.Text
-  createdAt DateTime        @default(now()) @map("created_at")
-  updatedAt DateTime        @default(now()) @updatedAt @map("updated_at")
-  media     PromotionMedia?
+  content   String   @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+  media     Media?   @relation(fields: [mediaId], references: [id])
+  mediaId   String?
 
   @@map("promotions")
 }
@@ -123,23 +117,14 @@ model Role {
   @@map("roles")
 }
 
-model BannerMedia {
-  bannerId String @unique @map("banner_id")
-  mediaId  String @map("media_id")
-  banner   Banner @relation(fields: [bannerId], references: [id], onDelete: Cascade)
-  media    Media  @relation(fields: [mediaId], references: [id], onDelete: Cascade)
-
-  @@id([bannerId, mediaId])
-  @@map("banner_medias")
-}
-
 model Banner {
-  id        String       @id @default(uuid())
+  id        String   @id @default(uuid())
   title     String
-  content   String       @db.Text
-  createdAt DateTime     @default(now()) @map("created_at")
-  updatedAt DateTime     @default(now()) @updatedAt @map("updated_at")
-  media     BannerMedia?
+  content   String   @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+  media     Media?   @relation(fields: [mediaId], references: [id])
+  mediaId   String?
 
   @@map("banners")
 }

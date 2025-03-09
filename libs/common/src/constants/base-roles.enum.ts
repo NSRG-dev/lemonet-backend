@@ -1,6 +1,5 @@
 export enum BaseRoleEnum {
   Admin = 'admin',
-  User = 'user',
   Bronze = 'bronze',
   Silver = 'silver',
   Gold = 'gold',
