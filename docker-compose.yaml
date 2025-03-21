@@ -29,7 +29,7 @@ services:
     ports:
       - 3000:3000
     environment:
-      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/template
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/
       - ACCESS_SECRET=secret
       - REFRESH_SECRET=secret
       - PORT=3000
@@ -56,7 +56,7 @@ services:
     ports:
       - 3001:3001
     environment:
-      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/template
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/postgres
       - ACCESS_SECRET=secret
       - REFRESH_SECRET=secret
       - PORT_ADMIN=3001
@@ -105,12 +105,12 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: template
+      POSTGRES_DB: postgres
       POSTGRES_PORT: 5432
     ports:
       - 5432:5432
     healthcheck:
-      test: ['CMD', 'pg_isready', '-U', 'postgres', '-d', 'template']
+      test: ['CMD', 'pg_isready', '-U', 'postgres', '-d', 'postgres']
       interval: 10s
       timeout: 5s
       retries: 5
